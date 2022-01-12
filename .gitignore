@@ -1,0 +1,6 @@
+# Gitignore
+
+*.o
+*.bin
+*.img
+*.iso
