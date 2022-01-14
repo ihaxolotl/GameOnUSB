@@ -17,7 +17,7 @@ boot:
 	mov sp, bp     ; 0x1000 to 0x7c00 will be our stack space 
 	sti
 
-	mov ax, 0x0003
+	mov ax, 0x0013
 	int 0x10
 
 .read_kernel:
