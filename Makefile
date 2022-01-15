@@ -1,25 +1,44 @@
 # The epic Makefile
 
 AS = nasm
-QEMU = qemu-system-i386
-QEMUFLAGS = -vga std -boot c -m 256 -fda game.img #-enable-kvm -cpu host
+CC = gcc
+CFLAGS = -m32 -ffreestanding \
+		 -fno-stack-protector \
+		 -fno-pie \
+		 -nostdlib \
+		 -std=c11 \
+		 -Wall \
+		 -Wextra \
+		 -Werror \
+		 -pedantic
+
+EMU = qemu-system-i386
+EMUFLAGS = -vga std -boot d -m 4096 -hda game.img #-enable-kvm -cpu host
 
 all = game.img
 
 game.img: boot.bin main.bin
-	cat $^ > game.img
+	cat $^ > game.bin && \
+	dd if=/dev/zero of=game.img bs=512 count=2880 && \
+	dd if=game.bin of=game.img seek=0 conv=notrunc
 
 boot.bin: boot.asm
-	$(AS) -f bin -o boot.bin boot.asm
+	$(AS) -f bin -o $@ $^
 
-main.bin: main.asm
-	$(AS) -f bin -o main.bin main.asm
+main.bin: main.o entry.o
+	$(CC) $(CFLAGS) -T linker.ld -o $@ $^
+
+main.o: main.c
+	$(CC) $(CFLAGS) -c $^
+
+entry.o: entry.asm
+	$(AS) -f elf32 -o $@ $^
 
 run:
-	$(QEMU) $(QEMUFLAGS) 
+	$(EMU) $(EMUFLAGS)
 
 debug:
-	$(QEMU) $(QEMUFLAGS) -S -s
+	$(EMU) $(EMUFLAGS) -S -s
 
 .PHONY: clean
 
