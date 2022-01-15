@@ -43,4 +43,4 @@ debug:
 .PHONY: clean
 
 clean:
-	rm -f *.o *.bin *.iso *.img
+	rm -f *.o *.bin *.iso *.img *.gch
