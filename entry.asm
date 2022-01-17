@@ -1,6 +1,8 @@
 [bits 32]
 [extern main]
 
+%include "vesa.asm"
+
 section .entry
 global _start
 _start:
@@ -8,6 +10,7 @@ _start:
 	mov ebp, esp
 	call main
 	hlt
+	jmp $
 
 section .bss
 stack_bottom: equ $

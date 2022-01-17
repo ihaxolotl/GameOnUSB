@@ -2,7 +2,7 @@
 
 AS = nasm
 CC = gcc
-CFLAGS = -m32 -ffreestanding \
+CFLAGS = -O2 -m32 -ffreestanding \
 		 -fno-stack-protector \
 		 -fno-pie \
 		 -nostdlib \
@@ -25,11 +25,14 @@ game.img: boot.bin main.bin
 boot.bin: boot.asm
 	$(AS) -f bin -o $@ $^
 
-main.bin: main.o entry.o
+main.bin: main.o graphics.o entry.o
 	$(CC) $(CFLAGS) -T linker.ld -o $@ $^
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c $^
+
+graphics.o: graphics.c graphics.h
+	$(CC) $(CFLAGS) -c $<
 
 entry.o: entry.asm
 	$(AS) -f elf32 -o $@ $^
